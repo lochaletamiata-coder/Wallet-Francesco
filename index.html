@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#26215C">
+<title>💰 Wallet Francesco</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  :root {
+    --bg: #0F0D2E;
+    --surface: #1A1754;
+    --surface2: #26215C;
+    --purple-light: #AFA9EC;
+    --purple-mid: #7F77DD;
+    --purple-main: #534AB7;
+    --purple-bright: #CECBF6;
+    --white: #EEEDFE;
+    --red: #E24B4A;
+    --red-light: #F09595;
+    --red-dark: #791F1F;
+    --text-muted: #7F77DD;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  .app {
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(160deg, #3C3489 0%, #1A1754 100%);
+    padding: 3rem 1.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    background: rgba(127,119,221,0.15);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: 20px;
+    width: 100px; height: 100px;
+    background: rgba(226,75,74,0.1);
+    border-radius: 50%;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+  .app-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--purple-light);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--purple-main);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--white);
+  }
+  .saldo-label {
+    font-size: 11px;
+    color: var(--purple-light);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    position: relative; z-index: 1;
+  }
+  .saldo-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1;
+    position: relative; z-index: 1;
+  }
+  .saldo-value .currency {
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--purple-light);
+    vertical-align: super;
+    margin-right: 2px;
+  }
+
+  /* METRIC CARDS */
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 1.25rem 1rem 0;
+  }
+  .metric {
+    background: var(--surface2);
+    border-radius: 16px;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(127,119,221,0.2);
+  }
+  .metric-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .metric-label svg { flex-shrink: 0; }
+  .metric-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .metric-value.in { color: var(--purple-bright); }
+  .metric-value.out { color: var(--red-light); }
+
+  /* SECTION */
+  .section {
+    padding: 1.5rem 1rem 0;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  /* CHART */
+  .chart-wrap {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 1rem;
+    border: 1px solid rgba(127,119,221,0.15);
+    position: relative;
+    height: 200px;
+  }
+  .chart-legend {
+    display: flex; gap: 16px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--purple-light);
+  }
+  .chart-legend span {
+    display: flex; align-items: center; gap: 5px;
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  /* TIPO TOGGLE */
+  .tipo-toggle {
+    display: flex; gap: 8px;
+    margin-bottom: 10px;
+  }
+  .tipo-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(127,119,221,0.3);
+    background: var(--surface2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--purple-light);
+    transition: all 0.15s;
+  }
+  .tipo-btn.active-in {
+    background: var(--purple-main);
+    color: var(--white);
+    border-color: var(--purple-main);
+  }
+  .tipo-btn.active-out {
+    background: var(--red);
+    color: #fff;
+    border-color: var(--red);
+  }
+
+  /* INPUT BAR */
+  .add-bar {
+    display: flex; gap: 8px;
+  }
+  .add-bar input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid rgba(127,119,221,0.25);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .add-bar input::placeholder { color: var(--text-muted); }
+  .add-bar input:focus { border-color: var(--purple-mid); }
+  .inp-amount { max-width: 90px; }
+  .btn-ok {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    transition: transform 0.1s;
+    flex-shrink: 0;
+  }
+  .btn-ok:active { transform: scale(0.93); }
+  .btn-ok.in { background: var(--purple-main); color: var(--white); }
+  .btn-ok.out { background: var(--red); color: #fff; }
+
+  /* TX LIST */
+  .tx-list {
+    display: flex; flex-direction: column; gap: 8px;
+    max-height: 340px;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+  .tx-list::-webkit-scrollbar { width: 3px; }
+  .tx-list::-webkit-scrollbar-track { background: transparent; }
+  .tx-list::-webkit-scrollbar-thumb { background: var(--purple-main); border-radius: 2px; }
+
+  .tx-row {
+    background: var(--surface);
+    border: 1px solid rgba(127,119,221,0.15);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 12px;
+    animation: slideIn 0.2s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .tx-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .tx-icon.in { background: rgba(83,74,183,0.3); color: var(--purple-bright); }
+  .tx-icon.out { background: rgba(226,75,74,0.2); color: var(--red-light); }
+  .tx-info { flex: 1; min-width: 0; }
+  .tx-causale {
+    font-size: 14px; font-weight: 500;
+    color: var(--white);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .tx-date { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .tx-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .tx-amount.in { color: var(--purple-bright); }
+  .tx-amount.out { color: var(--red-light); }
+  .btn-del {
+    background: none; border: none; cursor: pointer;
+    color: rgba(127,119,221,0.4);
+    font-size: 16px; padding: 4px;
+    transition: color 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-del:hover { color: var(--red); }
+
+  .empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 2rem;
+    background: var(--surface);
+    border-radius: 14px;
+    border: 1px dashed rgba(127,119,221,0.2);
+  }
+  .empty-icon { font-size: 32px; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="header-top">
+      <div class="app-name">💜 My Wallet</div>
+      <div class="avatar">F</div>
+    </div>
+    <div class="saldo-label">saldo attuale</div>
+    <div class="saldo-value" id="saldo-display"><span class="currency">€</span><span id="saldo-num">0,00</span></div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        entrate
+      </div>
+      <div class="metric-value in" id="tot-in">€0,00</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+        uscite
+      </div>
+      <div class="metric-value out" id="tot-out">€0,00</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">andamento</div>
+    <div class="chart-wrap">
+      <canvas id="myChart" role="img" aria-label="Grafico entrate e uscite mensili"></canvas>
+    </div>
+    <div class="chart-legend">
+      <span><span class="legend-dot" style="background:#7F77DD"></span>entrate</span>
+      <span><span class="legend-dot" style="background:#E24B4A"></span>uscite</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">nuovo movimento</div>
+    <div class="tipo-toggle">
+      <button class="tipo-btn active-in" id="btn-in" onclick="setTipo('in')">↑ entrata</button>
+      <button class="tipo-btn" id="btn-out" onclick="setTipo('out')">↓ uscita</button>
+    </div>
+    <div class="add-bar">
+      <input type="text" id="inp-causale" placeholder="causale (es. paghetta)" autocomplete="off" />
+      <input type="number" id="inp-amount" class="inp-amount" placeholder="€" min="0" step="0.01" />
+      <button class="btn-ok in" id="btn-ok" onclick="aggiungi()">+</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">movimenti <span id="tx-count" style="color:var(--purple-main);margin-left:4px;"></span></div>
+    <div class="tx-list" id="tx-list">
+      <div class="empty"><div class="empty-icon">💸</div>nessun movimento ancora<br>inizia aggiungendo la tua paghetta!</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let tipo = 'in';
+let txs = JSON.parse(localStorage.getItem('wallet_fran_v1') || '[]');
+let chart;
+
+function setTipo(t) {
+  tipo = t;
+  document.getElementById('btn-in').className = t === 'in' ? 'tipo-btn active-in' : 'tipo-btn';
+  document.getElementById('btn-out').className = t === 'out' ? 'tipo-btn active-out' : 'tipo-btn';
+  const btn = document.getElementById('btn-ok');
+  btn.className = 'btn-ok ' + t;
+  btn.textContent = t === 'in' ? '+' : '−';
+}
+
+function aggiungi() {
+  const causale = document.getElementById('inp-causale').value.trim();
+  const amount = parseFloat(document.getElementById('inp-amount').value);
+  if (!causale || isNaN(amount) || amount <= 0) return;
+  txs.unshift({ id: Date.now(), tipo, causale, amount: Math.round(amount * 100) / 100, date: new Date().toISOString() });
+  save();
+  document.getElementById('inp-causale').value = '';
+  document.getElementById('inp-amount').value = '';
+  render();
+}
+
+function elimina(id) {
+  txs = txs.filter(t => t.id !== id);
+  save();
+  render();
+}
+
+function save() { localStorage.setItem('wallet_fran_v1', JSON.stringify(txs)); }
+
+function fmt(n) { return '€' + n.toFixed(2).replace('.', ','); }
+
+function getLabel(date) {
+  return new Date(date).toLocaleDateString('it-IT', { month: 'short', year: '2-digit' });
+}
+
+function render() {
+  const totIn = txs.filter(t => t.tipo === 'in').reduce((s, t) => s + t.amount, 0);
+  const totOut = txs.filter(t => t.tipo === 'out').reduce((s, t) => s + t.amount, 0);
+  const saldo = totIn - totOut;
+
+  document.getElementById('saldo-num').textContent = fmt(saldo).replace('€','');
+  document.getElementById('tot-in').textContent = fmt(totIn);
+  document.getElementById('tot-out').textContent = fmt(totOut);
+  document.getElementById('tx-count').textContent = txs.length ? txs.length + ' mov.' : '';
+
+  const list = document.getElementById('tx-list');
+  if (txs.length === 0) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">💸</div>nessun movimento ancora<br>inizia aggiungendo la tua paghetta!</div>';
+  } else {
+    list.innerHTML = txs.map(t => {
+      const ds = new Date(t.date).toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
+      const icon = t.tipo === 'in' ? '↑' : '↓';
+      return `<div class="tx-row">
+        <div class="tx-icon ${t.tipo}">${icon}</div>
+        <div class="tx-info">
+          <div class="tx-causale">${t.causale}</div>
+          <div class="tx-date">${ds}</div>
+        </div>
+        <div class="tx-amount ${t.tipo}">${t.tipo === 'in' ? '+' : '−'}${fmt(t.amount)}</div>
+        <button class="btn-del" onclick="elimina(${t.id})" aria-label="Elimina">✕</button>
+      </div>`;
+    }).join('');
+  }
+
+  const monthMap = {};
+  txs.forEach(t => {
+    const lbl = getLabel(t.date);
+    if (!monthMap[lbl]) monthMap[lbl] = { in: 0, out: 0 };
+    monthMap[lbl][t.tipo] += t.amount;
+  });
+  const labels = Object.keys(monthMap).reverse();
+  const dataIn = labels.map(l => Math.round(monthMap[l].in * 100) / 100);
+  const dataOut = labels.map(l => Math.round(monthMap[l].out * 100) / 100);
+
+  if (!chart) {
+    chart = new Chart(document.getElementById('myChart'), {
+      type: 'bar',
+      data: {
+        labels: labels.length ? labels : ['—'],
+        datasets: [
+          { label: 'Entrate', data: dataIn.length ? dataIn : [0], backgroundColor: '#7F77DD', borderRadius: 6 },
+          { label: 'Uscite', data: dataOut.length ? dataOut : [0], backgroundColor: '#E24B4A', borderRadius: 6 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#7F77DD', font: { size: 11, family: 'DM Sans' } }, grid: { display: false }, border: { display: false } },
+          y: { ticks: { color: '#7F77DD', font: { size: 11, family: 'DM Sans' }, callback: v => '€' + v }, grid: { color: 'rgba(127,119,221,0.1)' }, border: { display: false } }
+        }
+      }
+    });
+  } else {
+    chart.data.labels = labels.length ? labels : ['—'];
+    chart.data.datasets[0].data = dataIn.length ? dataIn : [0];
+    chart.data.datasets[1].data = dataOut.length ? dataOut : [0];
+    chart.update();
+  }
+}
+
+document.getElementById('inp-amount').addEventListener('keydown', e => { if (e.key === 'Enter') aggiungi(); });
+document.getElementById('inp-causale').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('inp-amount').focus(); });
+
+render();
+</script>
+</body>
+</html>
